@@ -1,57 +1,5 @@
-/** Compiled by the Randori compiler v0.2.1 on Wed Mar 27 18:38:13 EDT 2013 */
+/** Compiled by the Randori compiler v0.2.1 on Thu Mar 28 09:29:18 EDT 2013 */
 
-
-// ====================================================
-// randori.styles.StyleExtensionMap
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.styles == "undefined")
-	randori.styles = {};
-
-randori.styles.StyleExtensionMap = function() {
-	this.hashMap = null;
-	this.hashMap = {};
-};
-
-randori.styles.StyleExtensionMap.prototype.addCSSEntry = function(cssSelector, extensionType, extensionValue) {
-	var attributes = this.hashMap[cssSelector];
-	if (attributes == null) {
-		attributes = new randori.styles.StyleExtensionMapEntry();
-		this.hashMap[cssSelector] = attributes;
-	}
-	attributes.addExtensionType(extensionType, extensionValue);
-};
-
-randori.styles.StyleExtensionMap.prototype.hasBehaviorEntry = function(cssSelector) {
-	return (this.hashMap[cssSelector] != null);
-};
-
-randori.styles.StyleExtensionMap.prototype.getExtensionEntry = function(cssSelector) {
-	return this.hashMap[cssSelector];
-};
-
-randori.styles.StyleExtensionMap.prototype.getAllRandoriSelectorEntries = function() {
-	var allEntries = [];
-	for (var cssSelector in this.hashMap) {
-		allEntries.push(cssSelector);
-	}
-	return allEntries;
-};
-
-randori.styles.StyleExtensionMap.className = "randori.styles.StyleExtensionMap";
-
-randori.styles.StyleExtensionMap.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('randori.styles.StyleExtensionMapEntry');
-	return p;
-};
-
-randori.styles.StyleExtensionMap.injectionPoints = function(t) {
-	return [];
-};
 
 // ====================================================
 // randori.startup.RandoriBootstrap
@@ -79,6 +27,7 @@ randori.startup.RandoriBootstrap.getClassDependencies = function(t) {
 	var p;
 	p = [];
 	p.push('randori.startup.RandoriModule');
+	p.push('randori.dom.DomWalker');
 	p.push('guice.GuiceJs');
 	return p;
 };
@@ -97,666 +46,6 @@ randori.startup.RandoriBootstrap.injectionPoints = function(t) {
 	return p;
 };
 
-
-// ====================================================
-// randori.content.ContentResolver
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.content == "undefined")
-	randori.content = {};
-
-randori.content.ContentResolver = function(map) {
-	this.map = map;
-};
-
-randori.content.ContentResolver.prototype.resolveContent = function(element) {
-	var content = element.getAttribute("data-content");
-	element.removeAttribute("data-content");
-	if (content == null) {
-	}
-};
-
-randori.content.ContentResolver.className = "randori.content.ContentResolver";
-
-randori.content.ContentResolver.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.content.ContentResolver.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'map', t:'randori.styles.StyleExtensionMap'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.utilities.BehaviorDecorator
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.utilities == "undefined")
-	randori.utilities = {};
-
-randori.utilities.BehaviorDecorator = function() {
-};
-
-randori.utilities.BehaviorDecorator.prototype.decorateObject = function(behavior) {
-	var futureBehavior = behavior;
-	futureBehavior.verifyAndRegister = verifyAndRegister;
-	futureBehavior.provideDecoratedElement = provideDecoratedElement;
-	futureBehavior.injectPotentialNode = injectPotentialNode;
-	futureBehavior.removeAndCleanup = removeAndCleanup;
-};
-
-randori.utilities.BehaviorDecorator.verifyAndRegister = function() {
-};
-
-randori.utilities.BehaviorDecorator.removeAndCleanup = function() {
-};
-
-randori.utilities.BehaviorDecorator.provideDecoratedElement = function(element) {
-};
-
-randori.utilities.BehaviorDecorator.injectPotentialNode = function(id, node) {
-};
-
-randori.utilities.BehaviorDecorator.className = "randori.utilities.BehaviorDecorator";
-
-randori.utilities.BehaviorDecorator.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.utilities.BehaviorDecorator.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.async.Promise
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.async == "undefined")
-	randori.async = {};
-
-randori.async.Promise = function() {
-	this.reason = null;
-	this.state = 0;
-	this.thenContracts = null;
-	this.value = null;
-	this.thenContracts = [];
-};
-
-randori.async.Promise.PENDING =0;
-
-randori.async.Promise.REJECTED =1;
-
-randori.async.Promise.FULLFILLED =2;
-
-randori.async.Promise.prototype.isFunction = function(obj) {
-	return !!(obj && obj.constructor && obj.call && obj.apply);
-};
-
-randori.async.Promise.prototype.then = function(onFulfilled, onRejected) {
-	if (arguments.length < 2) {
-		if (arguments.length < 1) {
-			onFulfilled = null;
-		}
-		onRejected = null;
-	}
-	var promise = new randori.async.Promise();
-	if (!this.isFunction($createStaticDelegate(this, onFulfilled))) {
-		onFulfilled = null;
-	}
-	if (!this.isFunction($createStaticDelegate(this, onRejected))) {
-		onRejected = null;
-	}
-	var thenContract = {fullfilledHandler:onFulfilled, rejectedHandler:onRejected, promise:promise};
-	this.thenContracts.push(thenContract);
-	var that = this;
-	if (this.state == 2) {
-		setTimeout(function() {
-			that.fullfill(this.value);
-		}, 1);
-	} else if (this.state == 1) {
-		setTimeout(function() {
-			that.internalReject(this.reason);
-		}, 1);
-	}
-	return promise;
-};
-
-randori.async.Promise.prototype.resolve = function(response) {
-	if (this.state == 0) {
-		this.value = response;
-		this.fullfill(response);
-	}
-};
-
-randori.async.Promise.prototype.fullfill = function(response) {
-	this.state = 2;
-	while (this.thenContracts.length > 0) {
-		var thenContract = this.thenContracts.shift();
-		if (thenContract.fullfilledHandler != null) {
-			try {
-				var callBackResult = thenContract.fullfilledHandler(response);
-				if (callBackResult && callBackResult.then != null) {
-					var returnedPromise = callBackResult;
-					returnedPromise.then(function(innerResponse) {
-						thenContract.promise.resolve(innerResponse);
-					}, function(innerReason) {
-						thenContract.promise.reject(innerReason);
-					});
-				} else {
-					thenContract.promise.resolve(callBackResult);
-				}
-			} catch (error) {
-				thenContract.promise.reject(error);
-			}
-		} else {
-			thenContract.promise.resolve(response);
-		}
-	}
-};
-
-randori.async.Promise.prototype.reject = function(reason) {
-	if (this.state == 0) {
-		this.reason = reason;
-		this.internalReject(reason);
-	}
-};
-
-randori.async.Promise.prototype.internalReject = function(reason) {
-	this.state = 1;
-	while (this.thenContracts.length > 0) {
-		var thenContract = this.thenContracts.shift();
-		if (thenContract.rejectedHandler != null) {
-			try {
-				var callBackResult = thenContract.rejectedHandler(reason);
-				if (callBackResult && callBackResult.then != null) {
-					var returnedPromise = callBackResult;
-					returnedPromise.then(function(innerResponse) {
-						thenContract.promise.resolve(innerResponse);
-					}, function(innerReason) {
-						thenContract.promise.reject(innerReason);
-					});
-				} else {
-					thenContract.promise.resolve(callBackResult);
-				}
-			} catch (error) {
-				thenContract.promise.reject(error);
-			}
-		} else {
-			thenContract.promise.reject(reason);
-		}
-	}
-};
-
-randori.async.Promise.className = "randori.async.Promise";
-
-randori.async.Promise.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.async.Promise.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.dom.DomWalker
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.dom == "undefined")
-	randori.dom = {};
-
-randori.dom.DomWalker = function(domExtensionFactory, classBuilder, elementDescriptorFactory, styleExtensionManager, localizationProvider) {
-	this.extensionsToBeApplied = null;
-	this.entryElement = null;
-	this.domExtensionFactory = domExtensionFactory;
-	this.classBuilder = classBuilder;
-	this.elementDescriptorFactory = elementDescriptorFactory;
-	this.styleExtensionManager = styleExtensionManager;
-	this.localizationProvider = localizationProvider;
-};
-
-randori.dom.DomWalker.prototype.investigateLinkElement = function(element) {
-	if (this.styleExtensionManager.parsingNeeded(element)) {
-		this.styleExtensionManager.parseAndReleaseLinkElement(element);
-		this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
-	}
-};
-
-randori.dom.DomWalker.prototype.investigateDomElement = function(element, parentBehavior) {
-	var currentBehavior = parentBehavior;
-	var domWalker = this;
-	var id = element.getAttribute("id");
-	if (id != null) {
-		element.removeAttribute("id");
-	}
-	var elementDescriptor = this.elementDescriptorFactory.describeElement(element, this.extensionsToBeApplied);
-	if (elementDescriptor.context != null) {
-		this.classBuilder = this.domExtensionFactory.buildChildClassBuilder(this.classBuilder, element, elementDescriptor.context);
-		domWalker = this.classBuilder.buildClass("randori.dom.DomWalker");
-	}
-	if (elementDescriptor.behavior != null) {
-		currentBehavior = this.domExtensionFactory.buildBehavior(this.classBuilder, element, elementDescriptor.behavior);
-		if (parentBehavior != null) {
-			parentBehavior.injectPotentialNode(id, currentBehavior);
-		}
-	} else {
-		if (id != null && currentBehavior != null) {
-			currentBehavior.injectPotentialNode(id, jQuery(element));
-		}
-	}
-	if (elementDescriptor.fragment != null) {
-		this.domExtensionFactory.buildNewContent(element, elementDescriptor.fragment);
-		domWalker = this.classBuilder.buildClass("randori.dom.DomWalker");
-	}
-	domWalker.walkChildren(element, currentBehavior);
-	if (currentBehavior != null && currentBehavior != parentBehavior) {
-		currentBehavior.verifyAndRegister();
-	}
-};
-
-randori.dom.DomWalker.prototype.investigateNode = function(node, parentBehavior) {
-	if (node.nodeType == 1) {
-		if (this.extensionsToBeApplied == null) {
-			this.entryElement = node;
-			this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
-		}
-		if (node.nodeName == "META") {
-			return;
-		}
-		if (node.nodeName == "LINK") {
-			this.investigateLinkElement(node);
-		} else {
-			this.investigateDomElement(node, parentBehavior);
-		}
-	} else if (node.nodeType == 3) {
-		this.localizationProvider.investigateTextNode(node);
-	} else {
-		this.walkChildren(node, parentBehavior);
-	}
-};
-
-randori.dom.DomWalker.prototype.walkChildren = function(parentNode, parentBehavior) {
-	if (arguments.length < 2) {
-		parentBehavior = null;
-	}
-	var node = parentNode.firstChild;
-	if (this.extensionsToBeApplied == null && (parentNode.nodeType == 1)) {
-		this.entryElement = parentNode;
-		this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
-	}
-	while (node != null) {
-		this.investigateNode(node, parentBehavior);
-		node = node.nextSibling;
-	}
-};
-
-randori.dom.DomWalker.prototype.walkDomChildren = function(parentNode, parentBehavior) {
-	if (arguments.length < 2) {
-		parentBehavior = null;
-	}
-	this.walkChildren(parentNode, parentBehavior);
-	this.extensionsToBeApplied = null;
-};
-
-randori.dom.DomWalker.prototype.walkDomFragment = function(node, parentBehavior) {
-	if (arguments.length < 2) {
-		parentBehavior = null;
-	}
-	this.investigateNode(node, parentBehavior);
-	this.extensionsToBeApplied = null;
-};
-
-randori.dom.DomWalker.className = "randori.dom.DomWalker";
-
-randori.dom.DomWalker.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.dom.DomWalker.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'domExtensionFactory', t:'randori.dom.DomExtensionFactory'});
-			p.push({n:'classBuilder', t:'guice.InjectionClassBuilder'});
-			p.push({n:'elementDescriptorFactory', t:'randori.dom.ElementDescriptorFactory'});
-			p.push({n:'styleExtensionManager', t:'randori.styles.StyleExtensionManager'});
-			p.push({n:'localizationProvider', t:'randori.i18n.LocalizationProvider'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.signal.SimpleSignal
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.signal == "undefined")
-	randori.signal = {};
-
-randori.signal.SimpleSignal = function() {
-	this.once = null;
-	this.permanent = null;
-	this.permanent = [];
-	this.once = [];
-};
-
-randori.signal.SimpleSignal.prototype.findIndex = function(listener, array) {
-	var index = -1;
-	var length;
-	var obj1;
-	var obj2;
-	obj1 = listener;
-	length = array.length;
-	for (var i = 0; i < array.length; i++) {
-		obj2 = array[i];
-		if (obj1 === obj2) {
-			index = i;
-			break;
-		}
-	}
-	return -1;
-};
-
-randori.signal.SimpleSignal.prototype.add = function(listener) {
-	this.permanent.push($createStaticDelegate(this, listener));
-};
-
-randori.signal.SimpleSignal.prototype.addOnce = function(listener) {
-	this.once.push($createStaticDelegate(this, listener));
-};
-
-randori.signal.SimpleSignal.prototype.remove = function(listener) {
-	var index;
-	index = this.findIndex($createStaticDelegate(this, listener), this.once);
-	if (index != -1) {
-		this.once.splice(index, 1);
-	} else {
-		index = this.findIndex($createStaticDelegate(this, listener), this.permanent);
-		if (index != -1) {
-			this.permanent.splice(index, 1);
-		}
-	}
-};
-
-randori.signal.SimpleSignal.prototype.has = function(listener) {
-	var index;
-	index = this.findIndex($createStaticDelegate(this, listener), this.once);
-	if (index != -1) {
-		return true;
-	}
-	index = this.findIndex($createStaticDelegate(this, listener), this.permanent);
-	if (index != -1) {
-		return true;
-	}
-	return false;
-};
-
-randori.signal.SimpleSignal.prototype.dispatch = function(args) {
-	var listener;
-	while (this.once.length > 0) {
-		listener = this.once.pop();
-		listener.apply(this, arguments);
-	}
-	for (var i = 0; i < this.permanent.length; i++) {
-		listener = this.permanent[i];
-		listener.apply(this, arguments);
-	}
-};
-
-randori.signal.SimpleSignal.className = "randori.signal.SimpleSignal";
-
-randori.signal.SimpleSignal.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.signal.SimpleSignal.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.content.ContentParser
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.content == "undefined")
-	randori.content = {};
-
-randori.content.ContentParser = function() {
-};
-
-randori.content.ContentParser.prototype.parse = function(content) {
-	var bodyRegex = new RegExp("(<\/?)body", "gi");
-	var sanitizedContent = content.replace(bodyRegex, "$1div");
-	return sanitizedContent;
-};
-
-randori.content.ContentParser.className = "randori.content.ContentParser";
-
-randori.content.ContentParser.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.content.ContentParser.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.timer.Timer
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.timer == "undefined")
-	randori.timer = {};
-
-randori.timer.Timer = function(delay, repeatCount) {
-	this._repeatCount = 0;
-	this._currentCount = 0;
-	this.intervalID = 0;
-	this.timerComplete = null;
-	this.timerTick = null;
-	this._delay = 0;
-	if (arguments.length < 2) {
-		repeatCount = 0;
-	}
-	this._delay = delay;
-	this._repeatCount = repeatCount;
-	this._currentCount = 0;
-	this.intervalID = -1;
-	this.timerTick = new randori.signal.SimpleSignal();
-	this.timerComplete = new randori.signal.SimpleSignal();
-};
-
-randori.timer.Timer.prototype.get_delay = function() {
-	return this._delay;
-};
-
-randori.timer.Timer.prototype.get_repeatCount = function() {
-	return this._repeatCount;
-};
-
-randori.timer.Timer.prototype.get_currentCount = function() {
-	return this._currentCount;
-};
-
-randori.timer.Timer.prototype.onTimerTick = function() {
-	this._currentCount++;
-	this.timerTick.dispatch(this, this._currentCount);
-	if (this._currentCount == this._repeatCount) {
-		this.timerComplete.dispatch(this);
-	}
-	this.stop();
-};
-
-randori.timer.Timer.prototype.start = function() {
-	if (this.intervalID != -1) {
-		this.stop();
-	}
-	this.intervalID = setInterval($createStaticDelegate(this, this.onTimerTick), this.get_delay());
-};
-
-randori.timer.Timer.prototype.stop = function() {
-	if (this.intervalID != -1) {
-		clearInterval(this.intervalID);
-	}
-	this.intervalID = -1;
-};
-
-randori.timer.Timer.prototype.reset = function() {
-	this._currentCount = 0;
-	this.stop();
-};
-
-randori.timer.Timer.className = "randori.timer.Timer";
-
-randori.timer.Timer.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('randori.signal.SimpleSignal');
-	return p;
-};
-
-randori.timer.Timer.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'delay', t:'int'});
-			p.push({n:'repeatCount', t:'int'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.bus.AbstractEventBus
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.bus == "undefined")
-	randori.bus = {};
-
-randori.bus.AbstractEventBus = function() {
-};
-
-randori.bus.AbstractEventBus.className = "randori.bus.AbstractEventBus";
-
-randori.bus.AbstractEventBus.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.bus.AbstractEventBus.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.content.ContentCache
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.content == "undefined")
-	randori.content = {};
-
-randori.content.ContentCache = function() {
-};
-
-randori.content.ContentCache.htmlMergedFiles ={};
-
-randori.content.ContentCache.prototype.hasCachedFile = function(key) {
-	return (randori.content.ContentCache.htmlMergedFiles[key] != null);
-};
-
-randori.content.ContentCache.prototype.getCachedFileList = function() {
-	var contentList = [];
-	for (var key in randori.content.ContentCache.htmlMergedFiles) {
-		contentList.push(key);
-	}
-	return contentList;
-};
-
-randori.content.ContentCache.prototype.getCachedHtmlForUri = function(key) {
-	if (randori.content.ContentCache.htmlMergedFiles[key] != null) {
-		return randori.content.ContentCache.htmlMergedFiles[key];
-	}
-	return null;
-};
-
-randori.content.ContentCache.className = "randori.content.ContentCache";
-
-randori.content.ContentCache.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.content.ContentCache.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.service.ServiceConfig
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.service == "undefined")
-	randori.service = {};
-
-randori.service.ServiceConfig = function() {
-	this.protocol = null;
-	this.host = null;
-	this.port = null;
-	this.debugMode = true;
-	
-};
-
-randori.service.ServiceConfig.className = "randori.service.ServiceConfig";
-
-randori.service.ServiceConfig.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.service.ServiceConfig.injectionPoints = function(t) {
-	return [];
-};
 
 // ====================================================
 // randori.service.AbstractService
@@ -890,6 +179,537 @@ randori.content.ContentLoader.injectionPoints = function(t) {
 			break;
 		case 3:
 			p = randori.service.AbstractService.injectionPoints(t);
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.startup.RandoriModule
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.startup == "undefined")
+	randori.startup = {};
+
+randori.startup.RandoriModule = function() {
+guice.GuiceModule.call(this);
+};
+
+randori.startup.RandoriModule.prototype.configure = function(binder) {
+	binder.bind(randori.styles.StyleExtensionMap).inScope(1).to(randori.styles.StyleExtensionMap);
+	binder.bind(randori.i18n.AbstractTranslator).to(randori.i18n.NoOpTranslator);
+};
+
+$inherit(randori.startup.RandoriModule, guice.GuiceModule);
+
+randori.startup.RandoriModule.className = "randori.startup.RandoriModule";
+
+randori.startup.RandoriModule.getClassDependencies = function(t) {
+	var p;
+	p = [];
+	p.push('randori.i18n.NoOpTranslator');
+	p.push('randori.i18n.AbstractTranslator');
+	p.push('randori.styles.StyleExtensionMap');
+	return p;
+};
+
+randori.startup.RandoriModule.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 1:
+			p = guice.GuiceModule.injectionPoints(t);
+			break;
+		case 2:
+			p = guice.GuiceModule.injectionPoints(t);
+			break;
+		case 3:
+			p = guice.GuiceModule.injectionPoints(t);
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.content.ContentResolver
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.content == "undefined")
+	randori.content = {};
+
+randori.content.ContentResolver = function(map) {
+	this.map = map;
+};
+
+randori.content.ContentResolver.prototype.resolveContent = function(element) {
+	var content = element.getAttribute("data-content");
+	element.removeAttribute("data-content");
+	if (content == null) {
+	}
+};
+
+randori.content.ContentResolver.className = "randori.content.ContentResolver";
+
+randori.content.ContentResolver.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.content.ContentResolver.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'map', t:'randori.styles.StyleExtensionMap'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.utilities.BehaviorDecorator
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.utilities == "undefined")
+	randori.utilities = {};
+
+randori.utilities.BehaviorDecorator = function() {
+};
+
+randori.utilities.BehaviorDecorator.prototype.decorateObject = function(behavior) {
+	var futureBehavior = behavior;
+	futureBehavior.verifyAndRegister = verifyAndRegister;
+	futureBehavior.provideDecoratedElement = provideDecoratedElement;
+	futureBehavior.injectPotentialNode = injectPotentialNode;
+	futureBehavior.removeAndCleanup = removeAndCleanup;
+};
+
+randori.utilities.BehaviorDecorator.verifyAndRegister = function() {
+};
+
+randori.utilities.BehaviorDecorator.removeAndCleanup = function() {
+};
+
+randori.utilities.BehaviorDecorator.provideDecoratedElement = function(element) {
+};
+
+randori.utilities.BehaviorDecorator.injectPotentialNode = function(id, node) {
+};
+
+randori.utilities.BehaviorDecorator.className = "randori.utilities.BehaviorDecorator";
+
+randori.utilities.BehaviorDecorator.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.utilities.BehaviorDecorator.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.styles.StyleExtensionMapEntry
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.styles == "undefined")
+	randori.styles = {};
+
+randori.styles.StyleExtensionMapEntry = function() {
+	this.hashMap = null;
+	this.hashMap = {};
+};
+
+randori.styles.StyleExtensionMapEntry.prototype.addExtensionType = function(extensionType, extensionValue) {
+	this.hashMap[extensionType] = extensionValue;
+};
+
+randori.styles.StyleExtensionMapEntry.prototype.hasExtensionType = function(extensionType) {
+	return (this.hashMap[extensionType] != null);
+};
+
+randori.styles.StyleExtensionMapEntry.prototype.getExtensionValue = function(extensionType) {
+	return this.hashMap[extensionType];
+};
+
+randori.styles.StyleExtensionMapEntry.prototype.clone = function() {
+	var newEntry = new randori.styles.StyleExtensionMapEntry();
+	this.mergeTo(newEntry);
+	return newEntry;
+};
+
+randori.styles.StyleExtensionMapEntry.prototype.mergeTo = function(entry) {
+	for (var extensionType in this.hashMap) {
+		entry.addExtensionType(extensionType, this.hashMap[extensionType]);
+	}
+};
+
+randori.styles.StyleExtensionMapEntry.className = "randori.styles.StyleExtensionMapEntry";
+
+randori.styles.StyleExtensionMapEntry.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.styles.StyleExtensionMapEntry.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.dom.DomExtensionFactory
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.dom == "undefined")
+	randori.dom = {};
+
+randori.dom.DomExtensionFactory = function(contentLoader, classResolver, externalBehaviorFactory) {
+	this.contentLoader = contentLoader;
+	this.classResolver = classResolver;
+	this.externalBehaviorFactory = externalBehaviorFactory;
+};
+
+randori.dom.DomExtensionFactory.prototype.buildBehavior = function(classBuilder, element, behaviorClassName) {
+	var behavior = null;
+	var resolution = this.classResolver.resolveClassName(behaviorClassName);
+	if (resolution.get_builtIn()) {
+		behavior = this.externalBehaviorFactory.createExternalBehavior(element, behaviorClassName, resolution.get_type());
+	} else {
+		behavior = classBuilder.buildClass(behaviorClassName);
+		behavior.provideDecoratedElement(element);
+	}
+	return behavior;
+};
+
+randori.dom.DomExtensionFactory.prototype.buildNewContent = function(element, fragmentURL) {
+	jQuery(element).append(this.contentLoader.synchronousFragmentLoad(fragmentURL));
+};
+
+randori.dom.DomExtensionFactory.prototype.buildChildClassBuilder = function(classBuilder, element, contextClassName) {
+	var module = classBuilder.buildClass(contextClassName);
+	var injector = classBuilder.buildClass("guice.ChildInjector");
+	var guiceJs = new guice.GuiceJs();
+	guiceJs.configureInjector(injector, module);
+	return injector.getInstance(guice.InjectionClassBuilder);
+};
+
+randori.dom.DomExtensionFactory.className = "randori.dom.DomExtensionFactory";
+
+randori.dom.DomExtensionFactory.getClassDependencies = function(t) {
+	var p;
+	p = [];
+	p.push('guice.InjectionClassBuilder');
+	p.push('guice.GuiceJs');
+	return p;
+};
+
+randori.dom.DomExtensionFactory.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'contentLoader', t:'randori.content.ContentLoader'});
+			p.push({n:'classResolver', t:'guice.resolver.ClassResolver'});
+			p.push({n:'externalBehaviorFactory', t:'randori.dom.ExternalBehaviorFactory'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.service.ServiceConfig
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.service == "undefined")
+	randori.service = {};
+
+randori.service.ServiceConfig = function() {
+	this.protocol = null;
+	this.host = null;
+	this.port = null;
+	this.debugMode = true;
+	
+};
+
+randori.service.ServiceConfig.className = "randori.service.ServiceConfig";
+
+randori.service.ServiceConfig.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.service.ServiceConfig.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.signal.SimpleSignal
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.signal == "undefined")
+	randori.signal = {};
+
+randori.signal.SimpleSignal = function() {
+	this.once = null;
+	this.permanent = null;
+	this.permanent = [];
+	this.once = [];
+};
+
+randori.signal.SimpleSignal.prototype.findIndex = function(listener, array) {
+	var index = -1;
+	var length;
+	var obj1;
+	var obj2;
+	obj1 = listener;
+	length = array.length;
+	for (var i = 0; i < array.length; i++) {
+		obj2 = array[i];
+		if (obj1 === obj2) {
+			index = i;
+			break;
+		}
+	}
+	return -1;
+};
+
+randori.signal.SimpleSignal.prototype.add = function(listener) {
+	this.permanent.push($createStaticDelegate(this, listener));
+};
+
+randori.signal.SimpleSignal.prototype.addOnce = function(listener) {
+	this.once.push($createStaticDelegate(this, listener));
+};
+
+randori.signal.SimpleSignal.prototype.remove = function(listener) {
+	var index;
+	index = this.findIndex($createStaticDelegate(this, listener), this.once);
+	if (index != -1) {
+		this.once.splice(index, 1);
+	} else {
+		index = this.findIndex($createStaticDelegate(this, listener), this.permanent);
+		if (index != -1) {
+			this.permanent.splice(index, 1);
+		}
+	}
+};
+
+randori.signal.SimpleSignal.prototype.has = function(listener) {
+	var index;
+	index = this.findIndex($createStaticDelegate(this, listener), this.once);
+	if (index != -1) {
+		return true;
+	}
+	index = this.findIndex($createStaticDelegate(this, listener), this.permanent);
+	if (index != -1) {
+		return true;
+	}
+	return false;
+};
+
+randori.signal.SimpleSignal.prototype.dispatch = function(args) {
+	var listener;
+	while (this.once.length > 0) {
+		listener = this.once.pop();
+		listener.apply(this, arguments);
+	}
+	for (var i = 0; i < this.permanent.length; i++) {
+		listener = this.permanent[i];
+		listener.apply(this, arguments);
+	}
+};
+
+randori.signal.SimpleSignal.className = "randori.signal.SimpleSignal";
+
+randori.signal.SimpleSignal.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.signal.SimpleSignal.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.content.ContentCache
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.content == "undefined")
+	randori.content = {};
+
+randori.content.ContentCache = function() {
+};
+
+randori.content.ContentCache.htmlMergedFiles ={};
+
+randori.content.ContentCache.prototype.hasCachedFile = function(key) {
+	return (randori.content.ContentCache.htmlMergedFiles[key] != null);
+};
+
+randori.content.ContentCache.prototype.getCachedFileList = function() {
+	var contentList = [];
+	for (var key in randori.content.ContentCache.htmlMergedFiles) {
+		contentList.push(key);
+	}
+	return contentList;
+};
+
+randori.content.ContentCache.prototype.getCachedHtmlForUri = function(key) {
+	if (randori.content.ContentCache.htmlMergedFiles[key] != null) {
+		return randori.content.ContentCache.htmlMergedFiles[key];
+	}
+	return null;
+};
+
+randori.content.ContentCache.className = "randori.content.ContentCache";
+
+randori.content.ContentCache.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.content.ContentCache.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.i18n.LocalizationProvider
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.i18n == "undefined")
+	randori.i18n = {};
+
+randori.i18n.LocalizationProvider = function(translator) {
+	this.internationalKey = new RegExp("\\[(labels|messages|reference)\\.\\w+\\]", "g");
+	this.timer = null;
+	this.pendingTranslations = null;
+	this.translator = translator;
+	this.timer = new randori.timer.Timer(10, 1);
+	this.timer.timerComplete.add($createStaticDelegate(this, this.sendTranslationRequest));
+	this.pendingTranslations = {};
+};
+
+randori.i18n.LocalizationProvider.prototype.getElementLocalizationComponents = function(textNode) {
+	var textContent = textNode.nodeValue;
+	var i18nResult = textContent.match(this.internationalKey);
+	return i18nResult;
+};
+
+randori.i18n.LocalizationProvider.prototype.translateKeysSynchronously = function(domain, keys) {
+	return this.translator.synchronousTranslate(domain, keys);
+};
+
+randori.i18n.LocalizationProvider.prototype.investigateTextNode = function(textNode) {
+	var result = this.getElementLocalizationComponents(textNode);
+	if (result != null) {
+		for (var i = 0; i < result.length; i++) {
+			this.requestTranslation(result[i], textNode);
+		}
+		this.scheduleTranslation();
+	}
+};
+
+randori.i18n.LocalizationProvider.prototype.requestTranslation = function(expression, textNode) {
+	var pendingTranslation = this.pendingTranslations[expression];
+	if (pendingTranslation == null) {
+		pendingTranslation = [];
+		this.pendingTranslations[expression] = pendingTranslation;
+	}
+	pendingTranslation.push(textNode);
+};
+
+randori.i18n.LocalizationProvider.prototype.scheduleTranslation = function() {
+	this.timer.reset();
+	this.timer.start();
+};
+
+randori.i18n.LocalizationProvider.prototype.sendTranslationRequest = function(timer) {
+	var domainLabels = {};
+	var keyValuePair = new RegExp("\\[(labels|messages|reference)\\.(\\w+)\\]");
+	var result;
+	var domain;
+	var key;
+	for (var expression in this.pendingTranslations) {
+		result = expression.match(keyValuePair);
+		domain = result[1];
+		key = result[2];
+		if (domainLabels[domain] == null) {
+			domainLabels[domain] = [];
+		}
+		domainLabels[domain].push(key);
+	}
+	for (var domainEntry in domainLabels) {
+		this.translator.translate(domainEntry, domainLabels[domainEntry]);
+	}
+};
+
+randori.i18n.LocalizationProvider.prototype.provideTranslation = function(domain, translations) {
+	var expression;
+	var nodes;
+	for (var i = translations.length - 1; i >= 0; i--) {
+		expression = "[" + domain + "." + translations[i].key + "]";
+		nodes = this.pendingTranslations[expression];
+		if (nodes != null) {
+			for (var j = 0; j < nodes.length; j++) {
+				this.applyTranslation(nodes[j], expression, translations[i].value);
+			}
+		}
+		delete this.pendingTranslations[expression];
+	}
+};
+
+randori.i18n.LocalizationProvider.prototype.applyTranslation = function(node, expression, translation) {
+	var currentValue = node.nodeValue;
+	var newValue = currentValue.replace(expression, translation);
+	node.nodeValue = newValue;
+};
+
+randori.i18n.LocalizationProvider.className = "randori.i18n.LocalizationProvider";
+
+randori.i18n.LocalizationProvider.getClassDependencies = function(t) {
+	var p;
+	p = [];
+	p.push('randori.timer.Timer');
+	return p;
+};
+
+randori.i18n.LocalizationProvider.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'translator', t:'randori.i18n.AbstractTranslator'});
 			break;
 		default:
 			p = [];
@@ -1579,7 +1399,7 @@ randori.behaviors.ViewStack.prototype.pushView = function(url) {
 		var content = that.contentParser.parse(result);
 		fragment.html(content);
 		fragment.attr("data-url", url);
-		this.decoratedNode.append(div);
+		that.decoratedNode.append(div);
 		var mediatorCapturer = new randori.behaviors.viewStack.MediatorCapturer();
 		that.domWalker.walkDomFragment(div, mediatorCapturer);
 		that.viewFragmentStack.push(fragment);
@@ -1690,500 +1510,88 @@ randori.behaviors.ViewStack.injectionPoints = function(t) {
 
 
 // ====================================================
-// randori.template.TemplateBuilder
+// randori.timer.Timer
 // ====================================================
 
 if (typeof randori == "undefined")
 	var randori = {};
-if (typeof randori.template == "undefined")
-	randori.template = {};
+if (typeof randori.timer == "undefined")
+	randori.timer = {};
 
-randori.template.TemplateBuilder = function() {
-this.validTemplate = false;
-this.templateAsString = null;
-};
-
-randori.template.TemplateBuilder.prototype.captureAndEmptyTemplateContents = function(rootTemplateNode) {
-	this.templateAsString = rootTemplateNode.html();
-	rootTemplateNode.empty();
-	this.validTemplate = true;
-};
-
-randori.template.TemplateBuilder.prototype.returnFieldName = function(token) {
-	return token.substr(1, token.length - 2);
-};
-
-randori.template.TemplateBuilder.prototype.renderTemplateClone = function(data) {
-	var token;
-	var field;
-	var dereferencedValue;
-	var keyRegex = new RegExp("\\{[\\w\\W]+?\\}", "g");
-	var foundKeys = this.templateAsString.match(keyRegex);
-	var output = this.templateAsString;
-	if (foundKeys != null) {
-		for (var j = 0; j < foundKeys.length; j++) {
-			token = foundKeys[j];
-			field = this.returnFieldName(token);
-			if (field.indexOf(".") != -1) {
-				dereferencedValue = this.resolveComplexName(data, field);
-			} else if (field != "*") {
-				dereferencedValue = data[field];
-			} else {
-				dereferencedValue = data;
-			}
-			output = output.replace(token, dereferencedValue);
-		}
+randori.timer.Timer = function(delay, repeatCount) {
+	this._repeatCount = 0;
+	this._currentCount = 0;
+	this.intervalID = 0;
+	this.timerComplete = null;
+	this.timerTick = null;
+	this._delay = 0;
+	if (arguments.length < 2) {
+		repeatCount = 0;
 	}
-	var fragmentJquery = jQuery("<div><\/div>");
-	fragmentJquery.append(output);
-	return fragmentJquery;
+	this._delay = delay;
+	this._repeatCount = repeatCount;
+	this._currentCount = 0;
+	this.intervalID = -1;
+	this.timerTick = new randori.signal.SimpleSignal();
+	this.timerComplete = new randori.signal.SimpleSignal();
 };
 
-randori.template.TemplateBuilder.prototype.resolveComplexName = function(root, name) {
-	var nextLevel = root;
-	var path = name.split(".");
-	for (var i = 0; i < path.length; i++) {
-		nextLevel = nextLevel[path[i]];
-		if (nextLevel == null) {
-			return null;
-		}
+randori.timer.Timer.prototype.get_delay = function() {
+	return this._delay;
+};
+
+randori.timer.Timer.prototype.get_repeatCount = function() {
+	return this._repeatCount;
+};
+
+randori.timer.Timer.prototype.get_currentCount = function() {
+	return this._currentCount;
+};
+
+randori.timer.Timer.prototype.onTimerTick = function() {
+	this._currentCount++;
+	this.timerTick.dispatch(this, this._currentCount);
+	if (this._currentCount == this._repeatCount) {
+		this.timerComplete.dispatch(this);
 	}
-	return nextLevel;
+	this.stop();
 };
 
-randori.template.TemplateBuilder.className = "randori.template.TemplateBuilder";
-
-randori.template.TemplateBuilder.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.template.TemplateBuilder.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.i18n.LocalizationProvider
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.i18n == "undefined")
-	randori.i18n = {};
-
-randori.i18n.LocalizationProvider = function(translator) {
-	this.internationalKey = new RegExp("\\[(labels|messages|reference)\\.\\w+\\]", "g");
-	this.timer = null;
-	this.pendingTranslations = null;
-	this.translator = translator;
-	this.timer = new randori.timer.Timer(10, 1);
-	this.timer.timerComplete.add($createStaticDelegate(this, this.sendTranslationRequest));
-	this.pendingTranslations = {};
-};
-
-randori.i18n.LocalizationProvider.prototype.getElementLocalizationComponents = function(textNode) {
-	var textContent = textNode.nodeValue;
-	var i18nResult = textContent.match(this.internationalKey);
-	return i18nResult;
-};
-
-randori.i18n.LocalizationProvider.prototype.translateKeysSynchronously = function(domain, keys) {
-	return this.translator.synchronousTranslate(domain, keys);
-};
-
-randori.i18n.LocalizationProvider.prototype.investigateTextNode = function(textNode) {
-	var result = this.getElementLocalizationComponents(textNode);
-	if (result != null) {
-		for (var i = 0; i < result.length; i++) {
-			this.requestTranslation(result[i], textNode);
-		}
-		this.scheduleTranslation();
+randori.timer.Timer.prototype.start = function() {
+	if (this.intervalID != -1) {
+		this.stop();
 	}
+	this.intervalID = setInterval($createStaticDelegate(this, this.onTimerTick), this.get_delay());
 };
 
-randori.i18n.LocalizationProvider.prototype.requestTranslation = function(expression, textNode) {
-	var pendingTranslation = this.pendingTranslations[expression];
-	if (pendingTranslation == null) {
-		pendingTranslation = [];
-		this.pendingTranslations[expression] = pendingTranslation;
+randori.timer.Timer.prototype.stop = function() {
+	if (this.intervalID != -1) {
+		clearInterval(this.intervalID);
 	}
-	pendingTranslation.push(textNode);
+	this.intervalID = -1;
 };
 
-randori.i18n.LocalizationProvider.prototype.scheduleTranslation = function() {
-	this.timer.reset();
-	this.timer.start();
+randori.timer.Timer.prototype.reset = function() {
+	this._currentCount = 0;
+	this.stop();
 };
 
-randori.i18n.LocalizationProvider.prototype.sendTranslationRequest = function(timer) {
-	var domainLabels = {};
-	var keyValuePair = new RegExp("\\[(labels|messages|reference)\\.(\\w+)\\]");
-	var result;
-	var domain;
-	var key;
-	for (var expression in this.pendingTranslations) {
-		result = expression.match(keyValuePair);
-		domain = result[1];
-		key = result[2];
-		if (domainLabels[domain] == null) {
-			domainLabels[domain] = [];
-		}
-		domainLabels[domain].push(key);
-	}
-	for (var domainEntry in domainLabels) {
-		this.translator.translate(domainEntry, domainLabels[domainEntry]);
-	}
-};
+randori.timer.Timer.className = "randori.timer.Timer";
 
-randori.i18n.LocalizationProvider.prototype.provideTranslation = function(domain, translations) {
-	var expression;
-	var nodes;
-	for (var i = translations.length - 1; i >= 0; i--) {
-		expression = "[" + domain + "." + translations[i].key + "]";
-		nodes = this.pendingTranslations[expression];
-		if (nodes != null) {
-			for (var j = 0; j < nodes.length; j++) {
-				this.applyTranslation(nodes[j], expression, translations[i].value);
-			}
-		}
-		delete this.pendingTranslations[expression];
-	}
-};
-
-randori.i18n.LocalizationProvider.prototype.applyTranslation = function(node, expression, translation) {
-	var currentValue = node.nodeValue;
-	var newValue = currentValue.replace(expression, translation);
-	node.nodeValue = newValue;
-};
-
-randori.i18n.LocalizationProvider.className = "randori.i18n.LocalizationProvider";
-
-randori.i18n.LocalizationProvider.getClassDependencies = function(t) {
+randori.timer.Timer.getClassDependencies = function(t) {
 	var p;
 	p = [];
-	p.push('randori.timer.Timer');
+	p.push('randori.signal.SimpleSignal');
 	return p;
 };
 
-randori.i18n.LocalizationProvider.injectionPoints = function(t) {
+randori.timer.Timer.injectionPoints = function(t) {
 	var p;
 	switch (t) {
 		case 0:
 			p = [];
-			p.push({n:'translator', t:'randori.i18n.AbstractTranslator'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.dom.ElementDescriptorFactory
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.dom == "undefined")
-	randori.dom = {};
-
-randori.dom.ElementDescriptorFactory = function(styleExtensionManager) {
-	this.styleExtensionManager = styleExtensionManager;
-};
-
-randori.dom.ElementDescriptorFactory.prototype.describeElement = function(element, possibleExtensions) {
-	var entry = possibleExtensions.get(element);
-	var descriptor = {context:element.getAttribute("data-context"), behavior:element.hasAttribute("data-mediator") ? element.getAttribute("data-mediator") : element.getAttribute("data-behavior"), fragment:element.getAttribute("data-fragment"), formatter:element.getAttribute("data-formatter"), validator:element.getAttribute("data-validator")};
-	if (entry != null) {
-		if (descriptor.context == null) {
-			descriptor.context = entry.getExtensionValue("context");
-		}
-		if (descriptor.behavior == null) {
-			descriptor.behavior = entry.hasExtensionType("mediator") ? entry.getExtensionValue("mediator") : entry.getExtensionValue("behavior");
-		}
-		if (descriptor.fragment == null) {
-			descriptor.fragment = entry.getExtensionValue("fragment");
-		}
-		if (descriptor.formatter == null) {
-			descriptor.formatter = entry.getExtensionValue("formatter");
-		}
-		if (descriptor.validator == null) {
-			descriptor.validator = entry.getExtensionValue("validator");
-		}
-	}
-	return descriptor;
-};
-
-randori.dom.ElementDescriptorFactory.className = "randori.dom.ElementDescriptorFactory";
-
-randori.dom.ElementDescriptorFactory.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.dom.ElementDescriptorFactory.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'styleExtensionManager', t:'randori.styles.StyleExtensionManager'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.behaviors.viewStack.ViewChangeAnimator
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.behaviors == "undefined")
-	randori.behaviors = {};
-if (typeof randori.behaviors.viewStack == "undefined")
-	randori.behaviors.viewStack = {};
-
-randori.behaviors.viewStack.ViewChangeAnimator = function() {
-};
-
-randori.behaviors.viewStack.ViewChangeAnimator.className = "randori.behaviors.viewStack.ViewChangeAnimator";
-
-randori.behaviors.viewStack.ViewChangeAnimator.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.behaviors.viewStack.ViewChangeAnimator.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.styles.StyleExtensionMapEntry
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.styles == "undefined")
-	randori.styles = {};
-
-randori.styles.StyleExtensionMapEntry = function() {
-	this.hashMap = null;
-	this.hashMap = {};
-};
-
-randori.styles.StyleExtensionMapEntry.prototype.addExtensionType = function(extensionType, extensionValue) {
-	this.hashMap[extensionType] = extensionValue;
-};
-
-randori.styles.StyleExtensionMapEntry.prototype.hasExtensionType = function(extensionType) {
-	return (this.hashMap[extensionType] != null);
-};
-
-randori.styles.StyleExtensionMapEntry.prototype.getExtensionValue = function(extensionType) {
-	return this.hashMap[extensionType];
-};
-
-randori.styles.StyleExtensionMapEntry.prototype.clone = function() {
-	var newEntry = new randori.styles.StyleExtensionMapEntry();
-	this.mergeTo(newEntry);
-	return newEntry;
-};
-
-randori.styles.StyleExtensionMapEntry.prototype.mergeTo = function(entry) {
-	for (var extensionType in this.hashMap) {
-		entry.addExtensionType(extensionType, this.hashMap[extensionType]);
-	}
-};
-
-randori.styles.StyleExtensionMapEntry.className = "randori.styles.StyleExtensionMapEntry";
-
-randori.styles.StyleExtensionMapEntry.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.styles.StyleExtensionMapEntry.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.dom.DomExtensionFactory
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.dom == "undefined")
-	randori.dom = {};
-
-randori.dom.DomExtensionFactory = function(contentLoader, classResolver, externalBehaviorFactory) {
-	this.contentLoader = contentLoader;
-	this.classResolver = classResolver;
-	this.externalBehaviorFactory = externalBehaviorFactory;
-};
-
-randori.dom.DomExtensionFactory.prototype.buildBehavior = function(classBuilder, element, behaviorClassName) {
-	var behavior = null;
-	var resolution = this.classResolver.resolveClassName(behaviorClassName);
-	if (resolution.get_builtIn()) {
-		behavior = this.externalBehaviorFactory.createExternalBehavior(element, behaviorClassName, resolution.get_type());
-	} else {
-		behavior = classBuilder.buildClass(behaviorClassName);
-		behavior.provideDecoratedElement(element);
-	}
-	return behavior;
-};
-
-randori.dom.DomExtensionFactory.prototype.buildNewContent = function(element, fragmentURL) {
-	jQuery(element).append(this.contentLoader.synchronousFragmentLoad(fragmentURL));
-};
-
-randori.dom.DomExtensionFactory.prototype.buildChildClassBuilder = function(classBuilder, element, contextClassName) {
-	var module = classBuilder.buildClass(contextClassName);
-	var injector = classBuilder.buildClass("guice.ChildInjector");
-	var guiceJs = new guice.GuiceJs();
-	guiceJs.configureInjector(injector, module);
-	return injector.getInstance(guice.InjectionClassBuilder);
-};
-
-randori.dom.DomExtensionFactory.className = "randori.dom.DomExtensionFactory";
-
-randori.dom.DomExtensionFactory.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('guice.GuiceJs');
-	return p;
-};
-
-randori.dom.DomExtensionFactory.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'contentLoader', t:'randori.content.ContentLoader'});
-			p.push({n:'classResolver', t:'guice.resolver.ClassResolver'});
-			p.push({n:'externalBehaviorFactory', t:'randori.dom.ExternalBehaviorFactory'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// randori.data.HashMap
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.data == "undefined")
-	randori.data = {};
-
-randori.data.HashMap = function() {
-	this.entries = null;
-	this.entries = {};
-};
-
-randori.data.HashMap.prototype.getEntry = function(key) {
-	var keyAsString = key;
-	var entry = this.entries[keyAsString];
-	var returnEntry = null;
-	if (entry != undefined) {
-		if (entry instanceof Array) {
-			for (var i = 0; i < entry.length; i++) {
-				if (entry[i].key == key) {
-					returnEntry = entry[i];
-					break;
-				}
-			}
-		} else if (entry.key == key) {
-			returnEntry = entry;
-		}
-	}
-	return returnEntry;
-};
-
-randori.data.HashMap.prototype.get = function(key) {
-	var entry = this.getEntry(key);
-	return entry != null ? entry.value : null;
-};
-
-randori.data.HashMap.prototype.put = function(key, value) {
-	var keyAsString = key;
-	var entryLocation = this.entries[keyAsString];
-	if (entryLocation == null) {
-		this.entries[keyAsString] = {key:key, value:value};
-	} else {
-		var entry = this.getEntry(key);
-		if (entry != undefined) {
-			entry.value = value;
-		} else if (entryLocation instanceof Array) {
-			entryLocation.push({key:key, value:value});
-		} else {
-			var ar = [];
-			ar[0] = entryLocation;
-			ar[1] = {key:key, value:value};
-			this.entries[keyAsString] = ar;
-		}
-	}
-};
-
-randori.data.HashMap.className = "randori.data.HashMap";
-
-randori.data.HashMap.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.data.HashMap.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// randori.startup.RandoriModule
-// ====================================================
-
-if (typeof randori == "undefined")
-	var randori = {};
-if (typeof randori.startup == "undefined")
-	randori.startup = {};
-
-randori.startup.RandoriModule = function() {
-guice.GuiceModule.call(this);
-};
-
-randori.startup.RandoriModule.prototype.configure = function(binder) {
-	binder.bind(randori.styles.StyleExtensionMap).inScope(1).to(randori.styles.StyleExtensionMap);
-	binder.bind(randori.i18n.AbstractTranslator).to(randori.i18n.NoOpTranslator);
-};
-
-$inherit(randori.startup.RandoriModule, guice.GuiceModule);
-
-randori.startup.RandoriModule.className = "randori.startup.RandoriModule";
-
-randori.startup.RandoriModule.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-randori.startup.RandoriModule.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 1:
-			p = guice.GuiceModule.injectionPoints(t);
-			break;
-		case 2:
-			p = guice.GuiceModule.injectionPoints(t);
-			break;
-		case 3:
-			p = guice.GuiceModule.injectionPoints(t);
+			p.push({n:'delay', t:'int'});
+			p.push({n:'repeatCount', t:'int'});
 			break;
 		default:
 			p = [];
@@ -2219,29 +1627,27 @@ randori.service.parser.AbstractParser.injectionPoints = function(t) {
 };
 
 // ====================================================
-// randori.dom.ExternalBehaviorFactory
+// randori.behaviors.viewStack.ViewChangeAnimator
 // ====================================================
 
 if (typeof randori == "undefined")
 	var randori = {};
-if (typeof randori.dom == "undefined")
-	randori.dom = {};
+if (typeof randori.behaviors == "undefined")
+	randori.behaviors = {};
+if (typeof randori.behaviors.viewStack == "undefined")
+	randori.behaviors.viewStack = {};
 
-randori.dom.ExternalBehaviorFactory = function() {
+randori.behaviors.viewStack.ViewChangeAnimator = function() {
 };
 
-randori.dom.ExternalBehaviorFactory.prototype.createExternalBehavior = function(element, behaviorClassName, constructorFunction) {
-	return null;
-};
+randori.behaviors.viewStack.ViewChangeAnimator.className = "randori.behaviors.viewStack.ViewChangeAnimator";
 
-randori.dom.ExternalBehaviorFactory.className = "randori.dom.ExternalBehaviorFactory";
-
-randori.dom.ExternalBehaviorFactory.getClassDependencies = function(t) {
+randori.behaviors.viewStack.ViewChangeAnimator.getClassDependencies = function(t) {
 	var p;
 	return [];
 };
 
-randori.dom.ExternalBehaviorFactory.injectionPoints = function(t) {
+randori.behaviors.viewStack.ViewChangeAnimator.injectionPoints = function(t) {
 	return [];
 };
 
@@ -2502,6 +1908,116 @@ randori.i18n.PropertyFileTranslator.injectionPoints = function(t) {
 
 
 // ====================================================
+// randori.content.ContentParser
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.content == "undefined")
+	randori.content = {};
+
+randori.content.ContentParser = function() {
+};
+
+randori.content.ContentParser.prototype.parse = function(content) {
+	var bodyRegex = new RegExp("(<\/?)body", "gi");
+	var sanitizedContent = content.replace(bodyRegex, "$1div");
+	return sanitizedContent;
+};
+
+randori.content.ContentParser.className = "randori.content.ContentParser";
+
+randori.content.ContentParser.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.content.ContentParser.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.dom.ElementDescriptorFactory
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.dom == "undefined")
+	randori.dom = {};
+
+randori.dom.ElementDescriptorFactory = function(styleExtensionManager) {
+	this.styleExtensionManager = styleExtensionManager;
+};
+
+randori.dom.ElementDescriptorFactory.prototype.describeElement = function(element, possibleExtensions) {
+	var entry = possibleExtensions.get(element);
+	var descriptor = {context:element.getAttribute("data-context"), behavior:element.hasAttribute("data-mediator") ? element.getAttribute("data-mediator") : element.getAttribute("data-behavior"), fragment:element.getAttribute("data-fragment"), formatter:element.getAttribute("data-formatter"), validator:element.getAttribute("data-validator")};
+	if (entry != null) {
+		if (descriptor.context == null) {
+			descriptor.context = entry.getExtensionValue("context");
+		}
+		if (descriptor.behavior == null) {
+			descriptor.behavior = entry.hasExtensionType("mediator") ? entry.getExtensionValue("mediator") : entry.getExtensionValue("behavior");
+		}
+		if (descriptor.fragment == null) {
+			descriptor.fragment = entry.getExtensionValue("fragment");
+		}
+		if (descriptor.formatter == null) {
+			descriptor.formatter = entry.getExtensionValue("formatter");
+		}
+		if (descriptor.validator == null) {
+			descriptor.validator = entry.getExtensionValue("validator");
+		}
+	}
+	return descriptor;
+};
+
+randori.dom.ElementDescriptorFactory.className = "randori.dom.ElementDescriptorFactory";
+
+randori.dom.ElementDescriptorFactory.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.dom.ElementDescriptorFactory.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'styleExtensionManager', t:'randori.styles.StyleExtensionManager'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.bus.AbstractEventBus
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.bus == "undefined")
+	randori.bus = {};
+
+randori.bus.AbstractEventBus = function() {
+};
+
+randori.bus.AbstractEventBus.className = "randori.bus.AbstractEventBus";
+
+randori.bus.AbstractEventBus.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.bus.AbstractEventBus.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
 // randori.styles.StyleExtensionManager
 // ====================================================
 
@@ -2659,3 +2175,493 @@ randori.styles.StyleExtensionManager.injectionPoints = function(t) {
 	return p;
 };
 
+
+// ====================================================
+// randori.data.HashMap
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.data == "undefined")
+	randori.data = {};
+
+randori.data.HashMap = function() {
+	this.entries = null;
+	this.entries = {};
+};
+
+randori.data.HashMap.prototype.getEntry = function(key) {
+	var keyAsString = key;
+	var entry = this.entries[keyAsString];
+	var returnEntry = null;
+	if (entry != undefined) {
+		if (entry instanceof Array) {
+			for (var i = 0; i < entry.length; i++) {
+				if (entry[i].key == key) {
+					returnEntry = entry[i];
+					break;
+				}
+			}
+		} else if (entry.key == key) {
+			returnEntry = entry;
+		}
+	}
+	return returnEntry;
+};
+
+randori.data.HashMap.prototype.get = function(key) {
+	var entry = this.getEntry(key);
+	return entry != null ? entry.value : null;
+};
+
+randori.data.HashMap.prototype.put = function(key, value) {
+	var keyAsString = key;
+	var entryLocation = this.entries[keyAsString];
+	if (entryLocation == null) {
+		this.entries[keyAsString] = {key:key, value:value};
+	} else {
+		var entry = this.getEntry(key);
+		if (entry != undefined) {
+			entry.value = value;
+		} else if (entryLocation instanceof Array) {
+			entryLocation.push({key:key, value:value});
+		} else {
+			var ar = [];
+			ar[0] = entryLocation;
+			ar[1] = {key:key, value:value};
+			this.entries[keyAsString] = ar;
+		}
+	}
+};
+
+randori.data.HashMap.className = "randori.data.HashMap";
+
+randori.data.HashMap.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.data.HashMap.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.dom.ExternalBehaviorFactory
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.dom == "undefined")
+	randori.dom = {};
+
+randori.dom.ExternalBehaviorFactory = function() {
+};
+
+randori.dom.ExternalBehaviorFactory.prototype.createExternalBehavior = function(element, behaviorClassName, constructorFunction) {
+	return null;
+};
+
+randori.dom.ExternalBehaviorFactory.className = "randori.dom.ExternalBehaviorFactory";
+
+randori.dom.ExternalBehaviorFactory.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.dom.ExternalBehaviorFactory.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.dom.DomWalker
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.dom == "undefined")
+	randori.dom = {};
+
+randori.dom.DomWalker = function(domExtensionFactory, classBuilder, elementDescriptorFactory, styleExtensionManager, localizationProvider) {
+	this.extensionsToBeApplied = null;
+	this.entryElement = null;
+	this.domExtensionFactory = domExtensionFactory;
+	this.classBuilder = classBuilder;
+	this.elementDescriptorFactory = elementDescriptorFactory;
+	this.styleExtensionManager = styleExtensionManager;
+	this.localizationProvider = localizationProvider;
+};
+
+randori.dom.DomWalker.prototype.investigateLinkElement = function(element) {
+	if (this.styleExtensionManager.parsingNeeded(element)) {
+		this.styleExtensionManager.parseAndReleaseLinkElement(element);
+		this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
+	}
+};
+
+randori.dom.DomWalker.prototype.investigateDomElement = function(element, parentBehavior) {
+	var currentBehavior = parentBehavior;
+	var domWalker = this;
+	var id = element.getAttribute("id");
+	if (id != null) {
+		element.removeAttribute("id");
+	}
+	var elementDescriptor = this.elementDescriptorFactory.describeElement(element, this.extensionsToBeApplied);
+	if (elementDescriptor.context != null) {
+		this.classBuilder = this.domExtensionFactory.buildChildClassBuilder(this.classBuilder, element, elementDescriptor.context);
+		domWalker = this.classBuilder.buildClass("randori.dom.DomWalker");
+	}
+	if (elementDescriptor.behavior != null) {
+		currentBehavior = this.domExtensionFactory.buildBehavior(this.classBuilder, element, elementDescriptor.behavior);
+		if (parentBehavior != null) {
+			parentBehavior.injectPotentialNode(id, currentBehavior);
+		}
+	} else {
+		if (id != null && currentBehavior != null) {
+			currentBehavior.injectPotentialNode(id, jQuery(element));
+		}
+	}
+	if (elementDescriptor.fragment != null) {
+		this.domExtensionFactory.buildNewContent(element, elementDescriptor.fragment);
+		domWalker = this.classBuilder.buildClass("randori.dom.DomWalker");
+	}
+	domWalker.walkChildren(element, currentBehavior);
+	if (currentBehavior != null && currentBehavior != parentBehavior) {
+		currentBehavior.verifyAndRegister();
+	}
+};
+
+randori.dom.DomWalker.prototype.investigateNode = function(node, parentBehavior) {
+	if (node.nodeType == 1) {
+		if (this.extensionsToBeApplied == null) {
+			this.entryElement = node;
+			this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
+		}
+		if (node.nodeName == "META") {
+			return;
+		}
+		if (node.nodeName == "LINK") {
+			this.investigateLinkElement(node);
+		} else {
+			this.investigateDomElement(node, parentBehavior);
+		}
+	} else if (node.nodeType == 3) {
+		this.localizationProvider.investigateTextNode(node);
+	} else {
+		this.walkChildren(node, parentBehavior);
+	}
+};
+
+randori.dom.DomWalker.prototype.walkChildren = function(parentNode, parentBehavior) {
+	if (arguments.length < 2) {
+		parentBehavior = null;
+	}
+	var node = parentNode.firstChild;
+	if (this.extensionsToBeApplied == null && (parentNode.nodeType == 1)) {
+		this.entryElement = parentNode;
+		this.extensionsToBeApplied = this.styleExtensionManager.getExtensionsForFragment(this.entryElement);
+	}
+	while (node != null) {
+		this.investigateNode(node, parentBehavior);
+		node = node.nextSibling;
+	}
+};
+
+randori.dom.DomWalker.prototype.walkDomChildren = function(parentNode, parentBehavior) {
+	if (arguments.length < 2) {
+		parentBehavior = null;
+	}
+	this.walkChildren(parentNode, parentBehavior);
+	this.extensionsToBeApplied = null;
+};
+
+randori.dom.DomWalker.prototype.walkDomFragment = function(node, parentBehavior) {
+	if (arguments.length < 2) {
+		parentBehavior = null;
+	}
+	this.investigateNode(node, parentBehavior);
+	this.extensionsToBeApplied = null;
+};
+
+randori.dom.DomWalker.className = "randori.dom.DomWalker";
+
+randori.dom.DomWalker.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.dom.DomWalker.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'domExtensionFactory', t:'randori.dom.DomExtensionFactory'});
+			p.push({n:'classBuilder', t:'guice.InjectionClassBuilder'});
+			p.push({n:'elementDescriptorFactory', t:'randori.dom.ElementDescriptorFactory'});
+			p.push({n:'styleExtensionManager', t:'randori.styles.StyleExtensionManager'});
+			p.push({n:'localizationProvider', t:'randori.i18n.LocalizationProvider'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// randori.async.Promise
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.async == "undefined")
+	randori.async = {};
+
+randori.async.Promise = function() {
+	this.reason = null;
+	this.state = 0;
+	this.thenContracts = null;
+	this.value = null;
+	this.thenContracts = [];
+};
+
+randori.async.Promise.PENDING =0;
+
+randori.async.Promise.REJECTED =1;
+
+randori.async.Promise.FULLFILLED =2;
+
+randori.async.Promise.prototype.isFunction = function(obj) {
+	return !!(obj && obj.constructor && obj.call && obj.apply);
+};
+
+randori.async.Promise.prototype.then = function(onFulfilled, onRejected) {
+	if (arguments.length < 2) {
+		if (arguments.length < 1) {
+			onFulfilled = null;
+		}
+		onRejected = null;
+	}
+	var promise = new randori.async.Promise();
+	if (!this.isFunction($createStaticDelegate(this, onFulfilled))) {
+		onFulfilled = null;
+	}
+	if (!this.isFunction($createStaticDelegate(this, onRejected))) {
+		onRejected = null;
+	}
+	var thenContract = {fullfilledHandler:onFulfilled, rejectedHandler:onRejected, promise:promise};
+	this.thenContracts.push(thenContract);
+	var that = this;
+	if (this.state == 2) {
+		setTimeout(function() {
+			that.fullfill(this.value);
+		}, 1);
+	} else if (this.state == 1) {
+		setTimeout(function() {
+			that.internalReject(this.reason);
+		}, 1);
+	}
+	return promise;
+};
+
+randori.async.Promise.prototype.resolve = function(response) {
+	if (this.state == 0) {
+		this.value = response;
+		this.fullfill(response);
+	}
+};
+
+randori.async.Promise.prototype.fullfill = function(response) {
+	this.state = 2;
+	while (this.thenContracts.length > 0) {
+		var thenContract = this.thenContracts.shift();
+		if (thenContract.fullfilledHandler != null) {
+			try {
+				var callBackResult = thenContract.fullfilledHandler(response);
+				if (callBackResult && callBackResult.then != null) {
+					var returnedPromise = callBackResult;
+					returnedPromise.then(function(innerResponse) {
+						thenContract.promise.resolve(innerResponse);
+					}, function(innerReason) {
+						thenContract.promise.reject(innerReason);
+					});
+				} else {
+					thenContract.promise.resolve(callBackResult);
+				}
+			} catch (error) {
+				thenContract.promise.reject(error);
+			}
+		} else {
+			thenContract.promise.resolve(response);
+		}
+	}
+};
+
+randori.async.Promise.prototype.reject = function(reason) {
+	if (this.state == 0) {
+		this.reason = reason;
+		this.internalReject(reason);
+	}
+};
+
+randori.async.Promise.prototype.internalReject = function(reason) {
+	this.state = 1;
+	while (this.thenContracts.length > 0) {
+		var thenContract = this.thenContracts.shift();
+		if (thenContract.rejectedHandler != null) {
+			try {
+				var callBackResult = thenContract.rejectedHandler(reason);
+				if (callBackResult && callBackResult.then != null) {
+					var returnedPromise = callBackResult;
+					returnedPromise.then(function(innerResponse) {
+						thenContract.promise.resolve(innerResponse);
+					}, function(innerReason) {
+						thenContract.promise.reject(innerReason);
+					});
+				} else {
+					thenContract.promise.resolve(callBackResult);
+				}
+			} catch (error) {
+				thenContract.promise.reject(error);
+			}
+		} else {
+			thenContract.promise.reject(reason);
+		}
+	}
+};
+
+randori.async.Promise.className = "randori.async.Promise";
+
+randori.async.Promise.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.async.Promise.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.template.TemplateBuilder
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.template == "undefined")
+	randori.template = {};
+
+randori.template.TemplateBuilder = function() {
+this.validTemplate = false;
+this.templateAsString = null;
+};
+
+randori.template.TemplateBuilder.prototype.captureAndEmptyTemplateContents = function(rootTemplateNode) {
+	this.templateAsString = rootTemplateNode.html();
+	rootTemplateNode.empty();
+	this.validTemplate = true;
+};
+
+randori.template.TemplateBuilder.prototype.returnFieldName = function(token) {
+	return token.substr(1, token.length - 2);
+};
+
+randori.template.TemplateBuilder.prototype.renderTemplateClone = function(data) {
+	var token;
+	var field;
+	var dereferencedValue;
+	var keyRegex = new RegExp("\\{[\\w\\W]+?\\}", "g");
+	var foundKeys = this.templateAsString.match(keyRegex);
+	var output = this.templateAsString;
+	if (foundKeys != null) {
+		for (var j = 0; j < foundKeys.length; j++) {
+			token = foundKeys[j];
+			field = this.returnFieldName(token);
+			if (field.indexOf(".") != -1) {
+				dereferencedValue = this.resolveComplexName(data, field);
+			} else if (field != "*") {
+				dereferencedValue = data[field];
+			} else {
+				dereferencedValue = data;
+			}
+			output = output.replace(token, dereferencedValue);
+		}
+	}
+	var fragmentJquery = jQuery("<div><\/div>");
+	fragmentJquery.append(output);
+	return fragmentJquery;
+};
+
+randori.template.TemplateBuilder.prototype.resolveComplexName = function(root, name) {
+	var nextLevel = root;
+	var path = name.split(".");
+	for (var i = 0; i < path.length; i++) {
+		nextLevel = nextLevel[path[i]];
+		if (nextLevel == null) {
+			return null;
+		}
+	}
+	return nextLevel;
+};
+
+randori.template.TemplateBuilder.className = "randori.template.TemplateBuilder";
+
+randori.template.TemplateBuilder.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+randori.template.TemplateBuilder.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// randori.styles.StyleExtensionMap
+// ====================================================
+
+if (typeof randori == "undefined")
+	var randori = {};
+if (typeof randori.styles == "undefined")
+	randori.styles = {};
+
+randori.styles.StyleExtensionMap = function() {
+	this.hashMap = null;
+	this.hashMap = {};
+};
+
+randori.styles.StyleExtensionMap.prototype.addCSSEntry = function(cssSelector, extensionType, extensionValue) {
+	var attributes = this.hashMap[cssSelector];
+	if (attributes == null) {
+		attributes = new randori.styles.StyleExtensionMapEntry();
+		this.hashMap[cssSelector] = attributes;
+	}
+	attributes.addExtensionType(extensionType, extensionValue);
+};
+
+randori.styles.StyleExtensionMap.prototype.hasBehaviorEntry = function(cssSelector) {
+	return (this.hashMap[cssSelector] != null);
+};
+
+randori.styles.StyleExtensionMap.prototype.getExtensionEntry = function(cssSelector) {
+	return this.hashMap[cssSelector];
+};
+
+randori.styles.StyleExtensionMap.prototype.getAllRandoriSelectorEntries = function() {
+	var allEntries = [];
+	for (var cssSelector in this.hashMap) {
+		allEntries.push(cssSelector);
+	}
+	return allEntries;
+};
+
+randori.styles.StyleExtensionMap.className = "randori.styles.StyleExtensionMap";
+
+randori.styles.StyleExtensionMap.getClassDependencies = function(t) {
+	var p;
+	p = [];
+	p.push('randori.styles.StyleExtensionMapEntry');
+	return p;
+};
+
+randori.styles.StyleExtensionMap.injectionPoints = function(t) {
+	return [];
+};
