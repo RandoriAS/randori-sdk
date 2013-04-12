@@ -1,4 +1,4 @@
-/** Compiled by the Randori compiler v0.2.2 on Mon Apr 01 17:50:48 CDT 2013 */
+/** Compiled by the Randori compiler v0.2.3 on Thu Apr 11 21:53:07 CDT 2013 */
 
 
 // ====================================================
@@ -48,200 +48,6 @@ return delegate;
 	return null;
 };
 
-
-// ====================================================
-// guice.GuiceJs
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-
-guice.GuiceJs = function(loader) {
-	this.loader = loader;
-};
-
-guice.GuiceJs.prototype.createInjector = function(module) {
-	var hashMap = {};
-	var binder = new guice.binding.Binder(hashMap);
-	var classResolver = new guice.resolver.ClassResolver(this.loader);
-	if (module != null) {
-		module.configure(binder);
-	}
-	var injector = new guice.Injector(binder, classResolver);
-	binder.bind(guice.Injector).toInstance(injector);
-	binder.bind(guice.resolver.ClassResolver).toInstance(classResolver);
-	binder.bind(guice.loader.SynchronousClassLoader).toInstance(this.loader);
-	return injector;
-};
-
-guice.GuiceJs.prototype.configureInjector = function(injector, module) {
-	injector.configureBinder(module);
-};
-
-guice.GuiceJs.className = "guice.GuiceJs";
-
-guice.GuiceJs.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('guice.binding.Binder');
-	p.push('guice.resolver.ClassResolver');
-	p.push('guice.loader.SynchronousClassLoader');
-	p.push('guice.Injector');
-	return p;
-};
-
-guice.GuiceJs.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'loader', t:'guice.loader.SynchronousClassLoader'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// guice.binding.BindingFactory
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.binding == "undefined")
-	guice.binding = {};
-
-guice.binding.BindingFactory = function(binder, typeDefinition) {
-	this.scope = 0;
-	this.binder = binder;
-	this.typeDefinition = typeDefinition;
-};
-
-guice.binding.BindingFactory.prototype.to = function(dependency) {
-	var abstractBinding = this.withDecoration(new guice.binding.TypeBinding(this.typeDefinition, new guice.reflection.TypeDefinition(dependency)));
-	this.binder.addBinding(abstractBinding);
-	return abstractBinding;
-};
-
-guice.binding.BindingFactory.prototype.toInstance = function(instance) {
-	var abstractBinding = this.withDecoration(new guice.binding.InstanceBinding(this.typeDefinition, instance));
-	this.binder.addBinding(abstractBinding);
-	return abstractBinding;
-};
-
-guice.binding.BindingFactory.prototype.toProvider = function(providerType) {
-	var abstractBinding = this.withDecoration(new guice.binding.ProviderBinding(this.typeDefinition, new guice.reflection.TypeDefinition(providerType)));
-	this.binder.addBinding(abstractBinding);
-	return abstractBinding;
-};
-
-guice.binding.BindingFactory.prototype.inScope = function(scope) {
-	this.scope = scope;
-	return this;
-};
-
-guice.binding.BindingFactory.prototype.withDecoration = function(abstractBinding) {
-	if (this.scope == 2) {
-		abstractBinding = new guice.binding.decorator.ContextDecorator(abstractBinding);
-	} else if (this.scope == 1) {
-		abstractBinding = new guice.binding.decorator.SingletonDecorator(abstractBinding);
-	}
-	return abstractBinding;
-};
-
-guice.binding.BindingFactory.className = "guice.binding.BindingFactory";
-
-guice.binding.BindingFactory.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('guice.binding.decorator.ContextDecorator');
-	p.push('guice.reflection.TypeDefinition');
-	p.push('guice.binding.InstanceBinding');
-	p.push('guice.binding.TypeBinding');
-	p.push('guice.binding.decorator.SingletonDecorator');
-	p.push('guice.binding.ProviderBinding');
-	return p;
-};
-
-guice.binding.BindingFactory.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'binder', t:'guice.binding.Binder'});
-			p.push({n:'typeDefinition', t:'guice.reflection.TypeDefinition'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// guice.utilities.InjectionDecorator
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.utilities == "undefined")
-	guice.utilities = {};
-
-guice.utilities.InjectionDecorator = function() {
-};
-
-guice.utilities.InjectionDecorator.prototype.decorateObject = function(dependency, className) {
-	var injectableType = dependency;
-	injectableType.injectionPoints = defaultInjectionPoints;
-	injectableType.getClassDependencies = getClassDependencies;
-	injectableType.className = className;
-};
-
-guice.utilities.InjectionDecorator.defaultInjectionPoints = function(t) {
-};
-
-guice.utilities.InjectionDecorator.getClassDependencies = function() {
-	return [];
-};
-
-guice.utilities.InjectionDecorator.className = "guice.utilities.InjectionDecorator";
-
-guice.utilities.InjectionDecorator.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-guice.utilities.InjectionDecorator.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// guice.GuiceModule
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-
-guice.GuiceModule = function() {
-};
-
-guice.GuiceModule.prototype.configure = function(binder) {
-};
-
-guice.GuiceModule.className = "guice.GuiceModule";
-
-guice.GuiceModule.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-guice.GuiceModule.injectionPoints = function(t) {
-	return [];
-};
 
 // ====================================================
 // guice.binding.Binder
@@ -301,49 +107,122 @@ guice.binding.Binder.injectionPoints = function(t) {
 
 
 // ====================================================
-// guice.loader.SynchronousClassLoader
+// guice.resolver.ClassResolver
 // ====================================================
 
 if (typeof guice == "undefined")
 	var guice = {};
-if (typeof guice.loader == "undefined")
-	guice.loader = {};
+if (typeof guice.resolver == "undefined")
+	guice.resolver = {};
 
-guice.loader.SynchronousClassLoader = function(xmlHttpRequest, urlRewriter, dynamicClassBaseUrl) {
-	this.xmlHttpRequest = xmlHttpRequest;
-	this.urlRewriter = urlRewriter;
-	this.dynamicClassBaseUrl = dynamicClassBaseUrl;
+guice.resolver.ClassResolver = function(loader) {
+	this.loader = loader;
 };
 
-guice.loader.SynchronousClassLoader.prototype.loadClass = function(qualifiedClassName) {
-	var classNameRegex = new RegExp("\\.", "g");
-	var potentialURL = qualifiedClassName.replace(classNameRegex, "\/");
-	potentialURL = this.dynamicClassBaseUrl + potentialURL;
-	potentialURL += ".js";
-	potentialURL = this.urlRewriter.rewriteURL(potentialURL);
-	this.xmlHttpRequest.open("GET", potentialURL, false);
-	this.xmlHttpRequest.send();
-	if (this.xmlHttpRequest.status == 404) {
-		throw new Error("Cannot continue, missing required class " + qualifiedClassName);
+guice.resolver.ClassResolver.prototype.resolveClassName = function(qualifiedClassName) {
+	var type = this.findDefinition(qualifiedClassName);
+	if (type == null) {
+		var classDefinition = this.loader.loadClass(qualifiedClassName);
+		this.resolveParentClassFromDefinition(qualifiedClassName, classDefinition);
+		this.addDefinition(classDefinition);
+		type = this.findDefinition(qualifiedClassName);
+		if (type == null) {
+			throw new Error(qualifiedClassName + " does not contain required injection information ");
+		}
+		var td = new guice.reflection.TypeDefinition(type);
+		if (!td.get_builtIn()) {
+			this.resolveClassDependencies(td);
+		}
 	}
-	return (this.xmlHttpRequest.responseText + "\n\/\/@ sourceURL=" + potentialURL);
+	return new guice.reflection.TypeDefinition(type);
 };
 
-guice.loader.SynchronousClassLoader.className = "guice.loader.SynchronousClassLoader";
+guice.resolver.ClassResolver.prototype.resolveClassDependencies = function(type) {
+	var classDependencies = type.getClassDependencies();
+	for (var i = 0; i < classDependencies.length; i++) {
+		this.resolveClassName(classDependencies[i]);
+	}
+};
 
-guice.loader.SynchronousClassLoader.getClassDependencies = function(t) {
+guice.resolver.ClassResolver.prototype.resolveParentClassFromDefinition = function(qualifiedClassName, classDefinition) {
+	var inheritString = "\\$inherit\\(";
+	inheritString += qualifiedClassName;
+	inheritString += ",\\s*(.*?)\\)";
+	var inheritResult = classDefinition.match(inheritString);
+	if (inheritResult != null) {
+		this.resolveClassName(inheritResult[1]);
+	}
+};
+
+guice.resolver.ClassResolver.prototype.findDefinition = function(qualifiedClassName) {
+	var nextLevel = window;
+	var failed = false;
+	var path = qualifiedClassName.split(".");
+	for (var i = 0; i < path.length; i++) {
+		nextLevel = nextLevel[path[i]];
+		if (!nextLevel) {
+			failed = true;
+			break;
+		}
+	}
+	if (failed) {
+		return null;
+	}
+	return nextLevel;
+};
+
+guice.resolver.ClassResolver.prototype.addDefinition = function(definitionText) {
+var globalEval = (function () {
+
+    var isIndirectEvalGlobal = (function (original, Object) {
+        try {
+            // Does `Object` resolve to a local variable, or to a global, built-in `Object`,
+            // reference to which we passed as a first argument?
+            return (1, eval)('Object') === original;
+        }
+        catch (err) {
+            // if indirect eval errors out (as allowed per ES3), then just bail out with `false`
+            return false;
+        }
+    })(Object, 123);
+
+    if (isIndirectEvalGlobal) {
+
+        // if indirect eval executes code globally, use it
+        return function (expression) {
+            return (1, eval)(expression);
+        };
+    }
+    else if (typeof window.execScript !== 'undefined') {
+
+        // if `window.execScript exists`, use it
+        return function (expression) {
+            return window.execScript(expression);
+        };
+    }
+
+    // otherwise, globalEval is `undefined` since nothing is returned
+})();
+
+globalEval(definitionText);
+
+};
+
+guice.resolver.ClassResolver.className = "guice.resolver.ClassResolver";
+
+guice.resolver.ClassResolver.getClassDependencies = function(t) {
 	var p;
-	return [];
+	p = [];
+	p.push('guice.reflection.TypeDefinition');
+	return p;
 };
 
-guice.loader.SynchronousClassLoader.injectionPoints = function(t) {
+guice.resolver.ClassResolver.injectionPoints = function(t) {
 	var p;
 	switch (t) {
 		case 0:
 			p = [];
-			p.push({n:'xmlHttpRequest', t:'XMLHttpRequest'});
-			p.push({n:'urlRewriter', t:'guice.loader.URLRewriterBase'});
-			p.push({n:'dynamicClassBaseUrl', t:'String'});
+			p.push({n:'loader', t:'guice.loader.SynchronousClassLoader'});
 			break;
 		default:
 			p = [];
@@ -354,36 +233,52 @@ guice.loader.SynchronousClassLoader.injectionPoints = function(t) {
 
 
 // ====================================================
-// guice.InjectionClassBuilder
+// guice.GuiceJs
 // ====================================================
 
 if (typeof guice == "undefined")
 	var guice = {};
 
-guice.InjectionClassBuilder = function(injector, classResolver) {
-	this.injector = injector;
-	this.classResolver = classResolver;
+guice.GuiceJs = function(loader) {
+	this.loader = loader;
 };
 
-guice.InjectionClassBuilder.prototype.buildClass = function(className) {
-	var type = this.classResolver.resolveClassName(className);
-	return this.injector.getInstanceByDefinition(type);
+guice.GuiceJs.prototype.createInjector = function(module) {
+	var hashMap = {};
+	var binder = new guice.binding.Binder(hashMap);
+	var classResolver = new guice.resolver.ClassResolver(this.loader);
+	if (module != null) {
+		module.configure(binder);
+	}
+	var injector = new guice.Injector(binder, classResolver);
+	binder.bind(guice.Injector).toInstance(injector);
+	binder.bind(guice.resolver.ClassResolver).toInstance(classResolver);
+	binder.bind(guice.loader.SynchronousClassLoader).toInstance(this.loader);
+	return injector;
 };
 
-guice.InjectionClassBuilder.className = "guice.InjectionClassBuilder";
+guice.GuiceJs.prototype.configureInjector = function(injector, module) {
+	injector.configureBinder(module);
+};
 
-guice.InjectionClassBuilder.getClassDependencies = function(t) {
+guice.GuiceJs.className = "guice.GuiceJs";
+
+guice.GuiceJs.getClassDependencies = function(t) {
 	var p;
-	return [];
+	p = [];
+	p.push('guice.binding.Binder');
+	p.push('guice.resolver.ClassResolver');
+	p.push('guice.loader.SynchronousClassLoader');
+	p.push('guice.Injector');
+	return p;
 };
 
-guice.InjectionClassBuilder.injectionPoints = function(t) {
+guice.GuiceJs.injectionPoints = function(t) {
 	var p;
 	switch (t) {
 		case 0:
 			p = [];
-			p.push({n:'injector', t:'guice.Injector'});
-			p.push({n:'classResolver', t:'guice.resolver.ClassResolver'});
+			p.push({n:'loader', t:'guice.loader.SynchronousClassLoader'});
 			break;
 		default:
 			p = [];
@@ -733,6 +628,423 @@ guice.binding.TypeBinding.injectionPoints = function(t) {
 
 
 // ====================================================
+// guice.utilities.InjectionDecorator
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.utilities == "undefined")
+	guice.utilities = {};
+
+guice.utilities.InjectionDecorator = function() {
+};
+
+guice.utilities.InjectionDecorator.prototype.decorateObject = function(dependency, className) {
+	var injectableType = dependency;
+	injectableType.injectionPoints = defaultInjectionPoints;
+	injectableType.getClassDependencies = getClassDependencies;
+	injectableType.className = className;
+};
+
+guice.utilities.InjectionDecorator.defaultInjectionPoints = function(t) {
+};
+
+guice.utilities.InjectionDecorator.getClassDependencies = function() {
+	return [];
+};
+
+guice.utilities.InjectionDecorator.className = "guice.utilities.InjectionDecorator";
+
+guice.utilities.InjectionDecorator.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.utilities.InjectionDecorator.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// guice.GuiceModule
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+
+guice.GuiceModule = function() {
+};
+
+guice.GuiceModule.prototype.configure = function(binder) {
+};
+
+guice.GuiceModule.className = "guice.GuiceModule";
+
+guice.GuiceModule.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.GuiceModule.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// guice.binding.BindingFactory
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.binding == "undefined")
+	guice.binding = {};
+
+guice.binding.BindingFactory = function(binder, typeDefinition) {
+	this.scope = 0;
+	this.binder = binder;
+	this.typeDefinition = typeDefinition;
+};
+
+guice.binding.BindingFactory.prototype.to = function(dependency) {
+	var abstractBinding = this.withDecoration(new guice.binding.TypeBinding(this.typeDefinition, new guice.reflection.TypeDefinition(dependency)));
+	this.binder.addBinding(abstractBinding);
+	return abstractBinding;
+};
+
+guice.binding.BindingFactory.prototype.toInstance = function(instance) {
+	var abstractBinding = this.withDecoration(new guice.binding.InstanceBinding(this.typeDefinition, instance));
+	this.binder.addBinding(abstractBinding);
+	return abstractBinding;
+};
+
+guice.binding.BindingFactory.prototype.toProvider = function(providerType) {
+	var abstractBinding = this.withDecoration(new guice.binding.ProviderBinding(this.typeDefinition, new guice.reflection.TypeDefinition(providerType)));
+	this.binder.addBinding(abstractBinding);
+	return abstractBinding;
+};
+
+guice.binding.BindingFactory.prototype.inScope = function(scope) {
+	this.scope = scope;
+	return this;
+};
+
+guice.binding.BindingFactory.prototype.withDecoration = function(abstractBinding) {
+	if (this.scope == 2) {
+		abstractBinding = new guice.binding.decorator.ContextDecorator(abstractBinding);
+	} else if (this.scope == 1) {
+		abstractBinding = new guice.binding.decorator.SingletonDecorator(abstractBinding);
+	}
+	return abstractBinding;
+};
+
+guice.binding.BindingFactory.className = "guice.binding.BindingFactory";
+
+guice.binding.BindingFactory.getClassDependencies = function(t) {
+	var p;
+	p = [];
+	p.push('guice.binding.decorator.ContextDecorator');
+	p.push('guice.reflection.TypeDefinition');
+	p.push('guice.binding.InstanceBinding');
+	p.push('guice.binding.TypeBinding');
+	p.push('guice.binding.decorator.SingletonDecorator');
+	p.push('guice.binding.ProviderBinding');
+	return p;
+};
+
+guice.binding.BindingFactory.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'binder', t:'guice.binding.Binder'});
+			p.push({n:'typeDefinition', t:'guice.reflection.TypeDefinition'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// guice.reflection.TypeDefinition
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.reflection == "undefined")
+	guice.reflection = {};
+
+guice.reflection.TypeDefinition = function(clazz) {
+	this._builtIn = false;
+	this._type = null;
+	this._type = clazz;
+	if (this.get_type().injectionPoints == null) {
+		this._builtIn = true;
+	}
+};
+
+guice.reflection.TypeDefinition.Constructor =0;
+
+guice.reflection.TypeDefinition.Property =1;
+
+guice.reflection.TypeDefinition.Method =2;
+
+guice.reflection.TypeDefinition.View =3;
+
+guice.reflection.TypeDefinition.prototype.get_type = function() {
+	return this._type;
+};
+
+guice.reflection.TypeDefinition.prototype.get_builtIn = function() {
+	return this._builtIn;
+};
+
+guice.reflection.TypeDefinition.prototype.getClassName = function() {
+	var className = this._type.className;
+	if (!className) {
+		className = this._type.name;
+		if (!className) {
+			throw new Error("Class not does defined a usable className");
+		}
+	}
+	return className;
+};
+
+guice.reflection.TypeDefinition.prototype.getSuperClassName = function() {
+	var className = this._type.superClassName;
+	if (!className) {
+		className = "Object";
+	}
+	return className;
+};
+
+guice.reflection.TypeDefinition.prototype.getClassDependencies = function() {
+	return this.get_type().getClassDependencies();
+};
+
+guice.reflection.TypeDefinition.prototype.injectionPoints = function(injectionType) {
+	return this.get_type().injectionPoints(injectionType);
+};
+
+guice.reflection.TypeDefinition.prototype.getInjectionMethods = function() {
+	return this.injectionPoints(2);
+};
+
+guice.reflection.TypeDefinition.prototype.getInjectionFields = function() {
+	return this.injectionPoints(1);
+};
+
+guice.reflection.TypeDefinition.prototype.getViewFields = function() {
+	return this.injectionPoints(3);
+};
+
+guice.reflection.TypeDefinition.prototype.getConstructorParameters = function() {
+	return this.injectionPoints(0);
+};
+
+guice.reflection.TypeDefinition.prototype.constructorApply = function(args) {
+	var instance = null;
+	if (this._builtIn) {
+		instance = new (this.get_type())();
+	} else {
+		var f;
+		var c;
+		c = this.get_type();
+		f = new Function();
+		f.prototype = c.prototype;
+		instance = new f();
+		c.apply(instance, args);
+		instance.constructor = c;
+	}
+	return instance;
+};
+
+guice.reflection.TypeDefinition.className = "guice.reflection.TypeDefinition";
+
+guice.reflection.TypeDefinition.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.reflection.TypeDefinition.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'clazz', t:'Class'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// guice.loader.URLRewriterBase
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.loader == "undefined")
+	guice.loader = {};
+
+guice.loader.URLRewriterBase = function(debugMode) {
+	if (arguments.length < 1) {
+		debugMode = false;
+	}
+};
+
+guice.loader.URLRewriterBase.prototype.rewriteURL = function(url) {
+	return url;
+};
+
+guice.loader.URLRewriterBase.className = "guice.loader.URLRewriterBase";
+
+guice.loader.URLRewriterBase.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.loader.URLRewriterBase.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'debugMode', t:'Boolean'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// guice.binding.provider.AbstractProvider
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.binding == "undefined")
+	guice.binding = {};
+if (typeof guice.binding.provider == "undefined")
+	guice.binding.provider = {};
+
+guice.binding.provider.AbstractProvider = function() {
+};
+
+guice.binding.provider.AbstractProvider.prototype.get = function() {
+	return null;
+};
+
+guice.binding.provider.AbstractProvider.className = "guice.binding.provider.AbstractProvider";
+
+guice.binding.provider.AbstractProvider.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.binding.provider.AbstractProvider.injectionPoints = function(t) {
+	return [];
+};
+
+// ====================================================
+// guice.loader.SynchronousClassLoader
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+if (typeof guice.loader == "undefined")
+	guice.loader = {};
+
+guice.loader.SynchronousClassLoader = function(xmlHttpRequest, urlRewriter, dynamicClassBaseUrl) {
+	this.xmlHttpRequest = xmlHttpRequest;
+	this.urlRewriter = urlRewriter;
+	this.dynamicClassBaseUrl = dynamicClassBaseUrl;
+};
+
+guice.loader.SynchronousClassLoader.prototype.loadClass = function(qualifiedClassName) {
+	var classNameRegex = new RegExp("\\.", "g");
+	var potentialURL = qualifiedClassName.replace(classNameRegex, "\/");
+	potentialURL = this.dynamicClassBaseUrl + potentialURL;
+	potentialURL += ".js";
+
+	this.xmlHttpRequest.open("GET", this.urlRewriter.rewriteURL(potentialURL), false);
+	this.xmlHttpRequest.send();
+	if (this.xmlHttpRequest.status == 404) {
+		throw new Error("Cannot continue, missing required class " + qualifiedClassName);
+	}
+	return (this.xmlHttpRequest.responseText + "\n\/\/@ sourceURL=" + potentialURL);
+};
+
+guice.loader.SynchronousClassLoader.className = "guice.loader.SynchronousClassLoader";
+
+guice.loader.SynchronousClassLoader.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.loader.SynchronousClassLoader.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'xmlHttpRequest', t:'XMLHttpRequest'});
+			p.push({n:'urlRewriter', t:'guice.loader.URLRewriterBase'});
+			p.push({n:'dynamicClassBaseUrl', t:'String'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
+// guice.InjectionClassBuilder
+// ====================================================
+
+if (typeof guice == "undefined")
+	var guice = {};
+
+guice.InjectionClassBuilder = function(injector, classResolver) {
+	this.injector = injector;
+	this.classResolver = classResolver;
+};
+
+guice.InjectionClassBuilder.prototype.buildClass = function(className) {
+	var type = this.classResolver.resolveClassName(className);
+	return this.injector.getInstanceByDefinition(type);
+};
+
+guice.InjectionClassBuilder.className = "guice.InjectionClassBuilder";
+
+guice.InjectionClassBuilder.getClassDependencies = function(t) {
+	var p;
+	return [];
+};
+
+guice.InjectionClassBuilder.injectionPoints = function(t) {
+	var p;
+	switch (t) {
+		case 0:
+			p = [];
+			p.push({n:'injector', t:'guice.Injector'});
+			p.push({n:'classResolver', t:'guice.resolver.ClassResolver'});
+			break;
+		default:
+			p = [];
+			break;
+	}
+	return p;
+};
+
+
+// ====================================================
 // guice.Injector
 // ====================================================
 
@@ -901,318 +1213,6 @@ guice.ChildInjector.injectionPoints = function(t) {
 			break;
 		case 3:
 			p = guice.Injector.injectionPoints(t);
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// guice.resolver.ClassResolver
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.resolver == "undefined")
-	guice.resolver = {};
-
-guice.resolver.ClassResolver = function(loader) {
-	this.loader = loader;
-};
-
-guice.resolver.ClassResolver.prototype.resolveClassName = function(qualifiedClassName) {
-	var type = this.findDefinition(qualifiedClassName);
-	if (type == null) {
-		var classDefinition = this.loader.loadClass(qualifiedClassName);
-		this.resolveParentClassFromDefinition(qualifiedClassName, classDefinition);
-		this.addDefinition(classDefinition);
-		type = this.findDefinition(qualifiedClassName);
-		if (type == null) {
-			throw new Error(qualifiedClassName + " does not contain required injection information ");
-		}
-		var td = new guice.reflection.TypeDefinition(type);
-		if (!td.get_builtIn()) {
-			this.resolveClassDependencies(td);
-		}
-	}
-	return new guice.reflection.TypeDefinition(type);
-};
-
-guice.resolver.ClassResolver.prototype.resolveClassDependencies = function(type) {
-	var classDependencies = type.getClassDependencies();
-	for (var i = 0; i < classDependencies.length; i++) {
-		this.resolveClassName(classDependencies[i]);
-	}
-};
-
-guice.resolver.ClassResolver.prototype.resolveParentClassFromDefinition = function(qualifiedClassName, classDefinition) {
-	var inheritString = "\\$inherit\\(";
-	inheritString += qualifiedClassName;
-	inheritString += ",\\s*(.*?)\\)";
-	var inheritResult = classDefinition.match(inheritString);
-	if (inheritResult != null) {
-		this.resolveClassName(inheritResult[1]);
-	}
-};
-
-guice.resolver.ClassResolver.prototype.findDefinition = function(qualifiedClassName) {
-	var nextLevel = window;
-	var failed = false;
-	var path = qualifiedClassName.split(".");
-	for (var i = 0; i < path.length; i++) {
-		nextLevel = nextLevel[path[i]];
-		if (!nextLevel) {
-			failed = true;
-			break;
-		}
-	}
-	if (failed) {
-		return null;
-	}
-	return nextLevel;
-};
-
-guice.resolver.ClassResolver.prototype.addDefinition = function(definitionText) {
-var globalEval = (function () {
-
-    var isIndirectEvalGlobal = (function (original, Object) {
-        try {
-            // Does `Object` resolve to a local variable, or to a global, built-in `Object`,
-            // reference to which we passed as a first argument?
-            return (1, eval)('Object') === original;
-        }
-        catch (err) {
-            // if indirect eval errors out (as allowed per ES3), then just bail out with `false`
-            return false;
-        }
-    })(Object, 123);
-
-    if (isIndirectEvalGlobal) {
-
-        // if indirect eval executes code globally, use it
-        return function (expression) {
-            return (1, eval)(expression);
-        };
-    }
-    else if (typeof window.execScript !== 'undefined') {
-
-        // if `window.execScript exists`, use it
-        return function (expression) {
-            return window.execScript(expression);
-        };
-    }
-
-    // otherwise, globalEval is `undefined` since nothing is returned
-})();
-
-globalEval(definitionText);
-
-};
-
-guice.resolver.ClassResolver.className = "guice.resolver.ClassResolver";
-
-guice.resolver.ClassResolver.getClassDependencies = function(t) {
-	var p;
-	p = [];
-	p.push('guice.reflection.TypeDefinition');
-	return p;
-};
-
-guice.resolver.ClassResolver.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'loader', t:'guice.loader.SynchronousClassLoader'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// guice.binding.provider.AbstractProvider
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.binding == "undefined")
-	guice.binding = {};
-if (typeof guice.binding.provider == "undefined")
-	guice.binding.provider = {};
-
-guice.binding.provider.AbstractProvider = function() {
-};
-
-guice.binding.provider.AbstractProvider.prototype.get = function() {
-	return null;
-};
-
-guice.binding.provider.AbstractProvider.className = "guice.binding.provider.AbstractProvider";
-
-guice.binding.provider.AbstractProvider.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-guice.binding.provider.AbstractProvider.injectionPoints = function(t) {
-	return [];
-};
-
-// ====================================================
-// guice.loader.URLRewriterBase
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.loader == "undefined")
-	guice.loader = {};
-
-guice.loader.URLRewriterBase = function(debugMode) {
-	if (arguments.length < 1) {
-		debugMode = false;
-	}
-};
-
-guice.loader.URLRewriterBase.prototype.rewriteURL = function(url) {
-	return url;
-};
-
-guice.loader.URLRewriterBase.className = "guice.loader.URLRewriterBase";
-
-guice.loader.URLRewriterBase.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-guice.loader.URLRewriterBase.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'debugMode', t:'Boolean'});
-			break;
-		default:
-			p = [];
-			break;
-	}
-	return p;
-};
-
-
-// ====================================================
-// guice.reflection.TypeDefinition
-// ====================================================
-
-if (typeof guice == "undefined")
-	var guice = {};
-if (typeof guice.reflection == "undefined")
-	guice.reflection = {};
-
-guice.reflection.TypeDefinition = function(clazz) {
-	this._builtIn = false;
-	this._type = null;
-	this._type = clazz;
-	if (this.get_type().injectionPoints == null) {
-		this._builtIn = true;
-	}
-};
-
-guice.reflection.TypeDefinition.Constructor =0;
-
-guice.reflection.TypeDefinition.Property =1;
-
-guice.reflection.TypeDefinition.Method =2;
-
-guice.reflection.TypeDefinition.View =3;
-
-guice.reflection.TypeDefinition.prototype.get_type = function() {
-	return this._type;
-};
-
-guice.reflection.TypeDefinition.prototype.get_builtIn = function() {
-	return this._builtIn;
-};
-
-guice.reflection.TypeDefinition.prototype.getClassName = function() {
-	var className = this._type.className;
-	if (!className) {
-		className = this._type.name;
-		if (!className) {
-			throw new Error("Class not does defined a usable className");
-		}
-	}
-	return className;
-};
-
-guice.reflection.TypeDefinition.prototype.getSuperClassName = function() {
-	var className = this._type.superClassName;
-	if (!className) {
-		className = "Object";
-	}
-	return className;
-};
-
-guice.reflection.TypeDefinition.prototype.getClassDependencies = function() {
-	return this.get_type().getClassDependencies();
-};
-
-guice.reflection.TypeDefinition.prototype.injectionPoints = function(injectionType) {
-	return this.get_type().injectionPoints(injectionType);
-};
-
-guice.reflection.TypeDefinition.prototype.getInjectionMethods = function() {
-	return this.injectionPoints(2);
-};
-
-guice.reflection.TypeDefinition.prototype.getInjectionFields = function() {
-	return this.injectionPoints(1);
-};
-
-guice.reflection.TypeDefinition.prototype.getViewFields = function() {
-	return this.injectionPoints(3);
-};
-
-guice.reflection.TypeDefinition.prototype.getConstructorParameters = function() {
-	return this.injectionPoints(0);
-};
-
-guice.reflection.TypeDefinition.prototype.constructorApply = function(args) {
-	var instance = null;
-	if (this._builtIn) {
-		instance = new (this.get_type())();
-	} else {
-		var f;
-		var c;
-		c = this.get_type();
-		f = new Function();
-		f.prototype = c.prototype;
-		instance = new f();
-		c.apply(instance, args);
-		instance.constructor = c;
-	}
-	return instance;
-};
-
-guice.reflection.TypeDefinition.className = "guice.reflection.TypeDefinition";
-
-guice.reflection.TypeDefinition.getClassDependencies = function(t) {
-	var p;
-	return [];
-};
-
-guice.reflection.TypeDefinition.injectionPoints = function(t) {
-	var p;
-	switch (t) {
-		case 0:
-			p = [];
-			p.push({n:'clazz', t:'Class'});
 			break;
 		default:
 			p = [];
